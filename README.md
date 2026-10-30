@@ -81,6 +81,8 @@ Stop automatic startup with `systemctl --user disable --now german-audio-subtitl
 
 Standard XDG environment overrides are supported. `--config` selects a different config file. Optional `state_directory` and `work_directory` config fields override data and temporary-audio locations. Keep those directories outside source control.
 
+`additional_cache_directories` can register other Firefox profiles' `cache2/entries` directories. Entries from different profiles remain distinct even if their cache filenames match. The development launcher registers its own cache while preserving the primary profile's configuration.
+
 Movie identity comes from the current tab URL, not the original SPA document URL. Per-tab media requests identify the selected rendition from cached HLS language metadata. The observed audio SourceBuffer timestamp offset maps the video clock to the audio timeline. Captions are withheld when identity or timing is uncertain. A request finishing after navigation saves its result to the original movie only.
 
 Transcription owns each completed audio segment once and uses only two seconds of preceding context. Glosses, including empty results, are cached locally. Terra receives nearby dialogue and a stable cached instruction prefix; it returns exact German spans and brief English meanings. Code inserts parentheses without rewriting the German or its timestamps. German captions remain available if the glossary request is late or fails.
@@ -97,6 +99,29 @@ Transcription owns each completed audio segment once and uses only two seconds o
 See [PRIVACY.md](PRIVACY.md) for exactly what stays local and what is sent to OpenAI.
 
 ## Development
+
+### Local automatic reloading
+
+```sh
+npm ci --ignore-scripts
+npm run dev
+```
+
+This opens a dedicated Firefox development profile, loads the extension temporarily, and reloads it automatically whenever a file in `extension/` changes. The profile persists between launches, including its Disney+ login. Sign in once in this window. The launcher pairs the extension with your local service and reuses the existing subtitle database.
+
+To add a desktop/application shortcut:
+
+```sh
+python3 dev_firefox.py --install-launcher
+```
+
+Then open **Firefox — German subtitles** from the application menu or desktop. Launch through that shortcut each time to load the extension and start its file watcher. This is a development session: ordinary Firefox still requires signed extension updates. Mozilla's [web-ext guide](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/) describes this supported reload mechanism.
+
+The launcher uses a separate profile because `web-ext` enables debugging preferences there. It never applies those preferences to your daily profile. On Snap Firefox, the dedicated profile, audio cache and private development extension copy live under `~/snap/firefox/common/german-audio-subtitles-development/`; other installations use the app's XDG data directory. The generated development copy contains only a local pairing token, remains outside the repository, and is never used by `build_extension.py`. Launcher output is logged in `~/.local/state/german-audio-subtitles/firefox-development.log`.
+
+Local backend changes, such as Terra prompts or transcription logic, need a restart of `german-audio-subtitles.service`; they do not require another Mozilla-signed extension. Normal Firefox extension updates need a new signature; readable JavaScript in this project does not need a separate pre-minification source archive.
+
+### Checks
 
 ```sh
 uv run python -m unittest discover -v

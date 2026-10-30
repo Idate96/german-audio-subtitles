@@ -15,3 +15,5 @@ The default locations are:
 - Temporary decoded audio: `~/.cache/german-audio-subtitles/`
 
 The service honors `XDG_CONFIG_HOME`, `XDG_DATA_HOME` and `XDG_CACHE_HOME`. Disabling the extension or closing playback stops new jobs after at most 15 seconds; an already running API request can finish. Delete the local data directory while the service is stopped to erase saved captions.
+
+The optional development launcher keeps a separate Firefox profile and a private generated extension copy. That copy contains the local pairing token to connect automatically. It is stored outside the checkout and is not included in release packages. The separate profile retains its own login/session data. For Snap Firefox these development files are in `~/snap/firefox/common/german-audio-subtitles-development/`.

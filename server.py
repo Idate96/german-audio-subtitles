@@ -215,7 +215,7 @@ def decode(segments, directory, own_start=None):
 class Engine:
     def __init__(self, config):
         self.config = config
-        self.cache = FirefoxCache(config["cache_directory"])
+        self.cache = FirefoxCache(config["cache_directory"], config.get("additional_cache_directories", []))
         self.lock = threading.RLock()
         self.wake = threading.Event()
         self.gloss_wake = threading.Event()

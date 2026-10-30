@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
+    "dev": "python3 dev_firefox.py",
     "test": "node --test extension/tests/*.test.cjs",
     "lint": "web-ext lint --source-dir extension --warnings-as-errors --no-config-discovery"
   },

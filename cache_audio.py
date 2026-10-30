@@ -90,24 +90,27 @@ class Entry:
 
 
 class FirefoxCache:
-    def __init__(self, directory):
+    def __init__(self, directory, additional_directories=()):
         self.directory = Path(directory)
+        self.directories = list(dict.fromkeys([self.directory, *(Path(p) for p in additional_directories)]))
         self.fingerprints = {}
         self.entries = {}
         self.timeline_cache = {}
 
     def refresh(self):
         seen = set()
-        for file in self.directory.iterdir():
+        files = (file for directory in self.directories if directory.is_dir() for file in directory.iterdir())
+        for file in files:
+            identity = str(file)
             try:
                 stat = file.stat()
                 if not file.is_file():
                     continue
-                seen.add(file.name)
+                seen.add(identity)
                 fingerprint = (stat.st_mtime_ns, stat.st_size)
-                if self.fingerprints.get(file.name) == fingerprint:
+                if self.fingerprints.get(identity) == fingerprint:
                     continue
-                self.entries.pop(file.name, None)
+                self.entries.pop(identity, None)
                 if stat.st_size < 8:
                     continue
                 with file.open("rb") as stream:
@@ -120,7 +123,7 @@ class FirefoxCache:
                 # Read only cache metadata until the media CDN and type are identified.
                 match = re.search(rb'https?://[^\x00\s]+', metadata)
                 content_type = re.search(rb'content-type:\s*([^\r\n\x00]+)', metadata, re.I)
-                self.fingerprints[file.name] = fingerprint
+                self.fingerprints[identity] = fingerprint
                 if not match or not content_type:
                     continue
                 url = match.group().decode("utf-8", "replace")
@@ -130,11 +133,11 @@ class FirefoxCache:
                 if b"audio" not in kind and b"mpegurl" not in kind:
                     continue
                 encoding = re.search(rb'content-encoding:\s*([^\r\n\x00]+)', metadata, re.I)
-                self.entries[file.name] = Entry(file, size, url,
+                self.entries[identity] = Entry(file, size, url,
                     encoding.group(1).decode().lower() if encoding else "", stat.st_mtime)
             except (OSError, ValueError, struct.error):
                 # In-progress writes are retried on the next scan.
-                self.fingerprints.pop(file.name, None)
+                self.fingerprints.pop(identity, None)
         for name in set(self.fingerprints) - seen:
             self.fingerprints.pop(name, None)
             self.entries.pop(name, None)
@@ -285,7 +288,7 @@ def cached_segments(cache, playlist_path):
                 if encrypted:
                     raise AudioSelectionError("This audio track is encrypted; buffered transcription is unavailable for this rendition.")
                 try:
-                    signature = (entry.file.name, entry.size, entry.modified, scale)
+                    signature = (str(entry.file), entry.size, entry.modified, scale)
                     start = cache.timeline_cache.get(signature)
                     if start is None:
                         start = media_time(entry.read(), scale)
