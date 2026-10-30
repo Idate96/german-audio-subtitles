@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>German audio subtitles</title>
+  <style>
+    :root { color-scheme:light dark; font:14px/1.5 system-ui,sans-serif; }
+    body { width:320px; margin:0; padding:18px; }
+    h1 { font-size:16px; margin:0 0 14px; }
+    .toggle { display:flex; gap:10px; align-items:center; cursor:pointer; }
+    input[type=checkbox] { width:18px; height:18px; accent-color:#2d7058; }
+    input[type=password] { box-sizing:border-box; width:100%; margin:6px 0 10px; padding:8px; border:1px solid #8888; border-radius:5px; }
+    p { margin:14px 0; }
+    #status { min-height:42px; }
+    button { border:1px solid #8888; border-radius:6px; padding:7px 12px; font:inherit; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    details { margin:14px 0; }
+    summary { cursor:pointer; }
+    form { margin-top:12px; }
+    small { display:block; opacity:.75; margin-top:12px; font-size:11px; line-height:1.5; }
+    #pairing-error { color:#d66; min-height:0; margin:8px 0; }
+  </style>
+</head>
+<body>
+  <h1>German audio subtitles</h1>
+  <label class="toggle"><input id="enabled" type="checkbox" checked> Show subtitles automatically</label>
+  <p id="status" role="status">Connecting…</p>
+  <details id="pairing" open>
+    <summary id="pairing-summary">Connect the local service</summary>
+    <form id="pairing-form">
+      <label for="pairing-code">Pairing code from your local setup</label>
+      <input id="pairing-code" type="password" autocomplete="off" spellcheck="false" maxlength="128" placeholder="Paste pairing code" required>
+      <button id="connect" type="submit">Connect</button>
+      <p id="pairing-error" role="alert"></p>
+    </form>
+  </details>
+  <button id="retry" type="button">Retry transcription</button>
+  <small>Playback details and media request paths go to the subtitle service on this computer. The service sends audio for transcription and subtitle text for English glosses to OpenAI using your key. Your OpenAI key is kept by the local service, never this extension.</small>
+  <script src="popup.js"></script>
+</body>
+</html>

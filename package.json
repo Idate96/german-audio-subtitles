@@ -1,0 +1,11 @@
+{
+  "name": "german-audio-subtitles",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test extension/tests/*.test.cjs",
+    "lint": "web-ext lint --source-dir extension --warnings-as-errors --no-config-discovery"
+  },
+  "devDependencies": { "web-ext": "10.8.0" },
+  "engines": { "node": ">=22" }
+}

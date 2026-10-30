@@ -1,0 +1,39 @@
+# Private settings, credentials and local runtime state
+config.json
+local-config.js
+extension/local-config.js
+openai_key
+openai-key.txt
+pairing-code.txt
+*Setup.html
+.env
+.env.*
+*.key
+*.pem
+state/
+data/
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+# Movie data and generated transcripts
+*.wav
+*.m4a
+*.mp4
+*.mkv
+*.mp4a
+*.srt
+*.vtt
+*-response.json
+*-review*.json
+# Generated tooling and packages
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+web-ext-artifacts/
+*.zip
+*.xpi
+*.log

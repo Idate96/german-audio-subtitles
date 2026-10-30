@@ -1,0 +1,72 @@
+{
+  "manifest_version": 2,
+  "name": "German Audio Subtitles",
+  "version": "0.2.0",
+  "description": "Shows German captions from your local transcription service, synchronized with Disney+ playback.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "german-audio-subtitles@local.lorenzo",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": [
+          "authenticationInfo",
+          "browsingActivity",
+          "websiteActivity",
+          "websiteContent"
+        ]
+      }
+    }
+  },
+  "permissions": [
+    "scripting",
+    "storage",
+    "webRequest",
+    "https://*.disneyplus.com/*",
+    "https://*.media.dssott.com/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "scripts": [
+      "subtitle-core.js",
+      "mse-clock.js",
+      "media-evidence.js",
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.disneyplus.com/*"
+      ],
+      "js": [
+        "mse-clock.js",
+        "mse-start.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://*.disneyplus.com/*"
+      ],
+      "js": [
+        "subtitle-core.js",
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "browser_action": {
+    "default_title": "German audio subtitles",
+    "default_popup": "popup.html",
+    "default_icon": "icon.svg"
+  },
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+  "content_security_policy": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:8766"
+}
